@@ -1,0 +1,21 @@
+- name: Fetch credentials from SSM
+  hosts: app
+  become: yes
+
+  tasks:
+    - name: Install AWS CLI
+      apt:
+        name: awscli
+        state: present
+
+    - name: Read DockerHub username from SSM
+      shell: >
+        aws ssm get-parameter --region us-east-1
+        --name /devops-lab/dockerhub/username
+        --query Parameter.Value --output text
+      register: dockerhub_user
+      changed_when: false
+
+    - name: Show what we got
+      debug:
+        msg: "Retrieved username: {{ dockerhub_user.stdout }}"
