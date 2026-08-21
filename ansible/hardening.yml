@@ -1,0 +1,69 @@
+- name: Harden servers
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Install security packages
+      apt:
+        name:
+          - ufw
+          - fail2ban
+        state: present
+
+    - name: Create devops user
+      user:
+        name: devops
+        shell: /bin/bash
+        groups: sudo
+        append: yes
+
+
+    - name: Allow devops to sudo without password
+      lineinfile:
+        path: /etc/sudoers.d/devops
+        line: "devops ALL=(ALL) NOPASSWD:ALL"
+        create: yes
+        validate: visudo -cf %s
+
+    - name: Copy SSH key to devops user
+      authorized_key:
+        user: devops
+        key: "{{ lookup('file', '~/.ssh/devops-lab.pem.pub') }}"
+
+    - name: Disable root SSH login
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^#?PermitRootLogin'
+        line: 'PermitRootLogin no'
+
+    - name: Disable password authentication
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^#?PasswordAuthentication'
+        line: 'PasswordAuthentication no'
+
+    - name: Restart SSH
+      service:
+        name: ssh
+        state: restarted
+
+    - name: Allow SSH through UFW
+      ufw:
+        rule: allow
+        port: '22'
+        proto: tcp
+
+    - name: Set UFW default deny incoming
+      ufw:
+        direction: incoming
+        policy: deny
+
+    - name: Enable UFW
+      ufw:
+        state: enabled
+
+    - name: Start Fail2Ban
+      service:
+        name: fail2ban
+        state: started
+        enabled: yes

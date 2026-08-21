@@ -1,0 +1,12 @@
+- name: Demonstrate vault usage
+  hosts: app
+  become: yes
+  vars_files:
+    - secrets.yml
+
+  tasks:
+    - name: Write config using a vaulted secret
+      copy:
+        content: "GRAFANA_ADMIN_PASSWORD={{ grafana_admin_password }}\n"
+        dest: /opt/grafana.env
+        mode: '0600'
