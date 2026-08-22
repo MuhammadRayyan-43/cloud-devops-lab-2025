@@ -1,0 +1,23 @@
+- name: Deploy the tool stack
+  hosts: app
+  become: yes
+
+  tasks:
+    - name: Create a directory for the stack
+      file:
+        path: /opt/tool-stack
+        state: directory
+
+    - name: Copy docker-compose.yml and config files to the target host
+      copy:
+        src: "../docker/{{ item }}"
+        dest: /opt/tool-stack/
+      with_items:
+        - docker-compose.yml
+        - nginx.conf
+        - prometheus.yml
+
+    - name: Start Jenkins and nginx
+      command: docker compose up -d nginx jenkins
+      args:
+        chdir: /opt/tool-stack
