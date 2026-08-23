@@ -16,6 +16,16 @@
         - docker-compose.yml
         - nginx.conf
         - prometheus.yml
+        
+    - name: Install docker CLI inside Jenkins
+      shell: |
+        docker exec -u root tool-stack-jenkins-1 bash -c '
+          apt-get update &&
+          apt-get install -y docker.io &&
+          usermod -aG docker jenkins
+        '
+      args:
+        creates: /dev/null
 
     - name: Start Jenkins and nginx
       command: docker compose up -d nginx jenkins
