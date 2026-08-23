@@ -20,7 +20,7 @@ resource "aws_instance" "bastion" {
 
 resource "aws_instance" "app" {
   ami                    = data.aws_ami.ubuntu.id
-  instance_type          = "t3.micro"
+  instance_type          = "c7i-flex.large"
   subnet_id              = aws_subnet.private.id
   vpc_security_group_ids = [aws_security_group.app.id]
   key_name               = var.key_name
@@ -40,4 +40,9 @@ resource "aws_instance" "app" {
   EOF
 
   tags = { Name = "devops-lab-app" }
+}
+
+resource "aws_eip" "bastion" {
+  instance = aws_instance.bastion.id
+  domain   = "vpc"
 }
