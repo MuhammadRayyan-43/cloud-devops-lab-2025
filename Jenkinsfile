@@ -13,43 +13,21 @@ pipeline {
             }
         }
 
-        stage('Install dependencies') {
+        stage('Build image') {
             steps {
-                dir('app') {
-                    sh '''
-                        python3 -m venv venv
-                        . venv/bin/activate
-                        pip install -r requirements.txt
-                    '''
-                }
+                sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} -t ${IMAGE_NAME}:latest app/"
             }
         }
 
         stage('Lint') {
             steps {
-                dir('app') {
-                    sh '''
-                        . venv/bin/activate
-                        flake8 .
-                    '''
-                }
+                sh "docker run --rm ${IMAGE_NAME}:${IMAGE_TAG} flake8 ."
             }
         }
 
         stage('Test') {
             steps {
-                dir('app') {
-                    sh '''
-                        . venv/bin/activate
-                        python -m pytest tests/ -v
-                    '''
-                }
-            }
-        }
-
-        stage('Build image') {
-            steps {
-                sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} -t ${IMAGE_NAME}:latest app/"
+                sh "docker run --rm ${IMAGE_NAME}:${IMAGE_TAG} python -m pytest tests/ -v"
             }
         }
 
@@ -60,12 +38,12 @@ pipeline {
                     usernameVariable: 'DOCKER_USER',
                     passwordVariable: 'DOCKER_PASS'
                 )]) {
-                    sh '''
-                        echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-                        docker push ''' + "${IMAGE_NAME}:${IMAGE_TAG}" + '''
-                        docker push ''' + "${IMAGE_NAME}:latest" + '''
+                    sh """
+                        echo \$DOCKER_PASS | docker login -u \$DOCKER_USER --password-stdin
+                        docker push ${IMAGE_NAME}:${IMAGE_TAG}
+                        docker push ${IMAGE_NAME}:latest
                         docker logout
-                    '''
+                    """
                 }
             }
         }
