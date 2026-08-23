@@ -16,6 +16,8 @@
         - docker-compose.yml
         - nginx.conf
         - prometheus.yml
+        - alerts.yml
+        - alertmanager.yml
         
     - name: Install docker CLI inside Jenkins
       shell: |

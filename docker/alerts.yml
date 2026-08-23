@@ -1,0 +1,26 @@
+groups:
+  - name: devops-lab
+    rules:
+      - alert: JenkinsDown
+        expr: up{job="jenkins"} == 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Jenkins has been down for 5 minutes"
+
+      - alert: HighCPU
+        expr: 100 - (avg(rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 70
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "CPU above 70% for 5 minutes"
+
+      - alert: AppDown
+        expr: up{job="app"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Application is not responding"
