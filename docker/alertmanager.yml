@@ -4,7 +4,7 @@ route:
 receivers:
   - name: slack
     slack_configs:
-      - api_url: 'https://hooks.slack.com/services/YOUR/WEBHOOK/URL'
+      - api_url: 'https://hooks.slack.com/services/REPLACE/WITH/YOUR_WEBHOOK'
         channel: '#alerts'
         title: '{{ .CommonAnnotations.summary }}'
         text: 'Severity: {{ .CommonLabels.severity }}'
