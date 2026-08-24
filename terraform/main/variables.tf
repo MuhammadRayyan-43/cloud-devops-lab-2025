@@ -16,7 +16,7 @@ variable "private_subnet_cidr" {
 
 variable "my_ip" {
   description = "Your public IP for SSH access"
-  default     = "124.29.216.35/32"
+  default     = "149.40.165.195/32"
 }
 
 variable "enable_nat" {
