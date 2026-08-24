@@ -31,6 +31,23 @@ pipeline {
             }
         }
 
+        stage('SonarQube analysis') {
+            steps {
+                withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
+                    sh """
+                        docker run --rm \
+                            --network tool-stack_default \
+                            -v \$(pwd)/app:/usr/src \
+                            sonarsource/sonar-scanner-cli \
+                            -Dsonar.projectKey=devops-lab \
+                            -Dsonar.sources=. \
+                            -Dsonar.host.url=http://sonarqube:9000 \
+                            -Dsonar.token=\$SONAR_TOKEN
+                    """
+                }
+            }
+        }        
+
         stage('Push image') {
             steps {
                 withCredentials([usernamePassword(
