@@ -41,7 +41,7 @@ pipeline {
                             sonarsource/sonar-scanner-cli \
                             -Dsonar.projectKey=devops-lab \
                             -Dsonar.sources=. \
-                            -Dsonar.host.url=http://sonarqube:9000 \
+                            -Dsonar.host.url=http://sonarqube:9000/sonar \
                             -Dsonar.token=\$SONAR_TOKEN
                     """
                 }
