@@ -16,7 +16,7 @@ def health():
 
 
 def add(a, b):
-    return a
+    return a + b
 
 
 if __name__ == "__main__":
