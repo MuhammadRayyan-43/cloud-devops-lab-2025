@@ -29,7 +29,7 @@
       args:
         creates: /dev/null
 
-    - name: Start Jenkins and nginx
-      command: docker compose up -d nginx jenkins
+    - name: Start the containers
+      command: docker compose up -d
       args:
         chdir: /opt/tool-stack
